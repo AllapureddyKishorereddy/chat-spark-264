@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageSquare, PlusCircle, Search } from "lucide-react";
+import { MessageSquare, PlusCircle, Search, Users, UserCircle, Settings } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import CreateGroupDialog from "./CreateGroupDialog";
 
 interface Chat {
   id: string;
@@ -57,28 +58,43 @@ const mockChats: Chat[] = [
 interface ChatSidebarProps {
   selectedChatId: string | null;
   onSelectChat: (chatId: string) => void;
+  onOpenSettings: () => void;
 }
 
-const ChatSidebar = ({ selectedChatId, onSelectChat }: ChatSidebarProps) => {
+const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
 
   const filteredChats = mockChats.filter((chat) =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="h-full bg-chat-sidebar border-r flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-semibold">Chats</h2>
+    <>
+      <div className="h-full bg-chat-sidebar border-r flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-semibold">Chats</h2>
+            </div>
           </div>
-          <Button size="icon" variant="ghost" className="hover:bg-background/50">
-            <PlusCircle className="w-5 h-5" />
-          </Button>
-        </div>
+          <div className="flex gap-2 mb-3">
+            <Button size="sm" className="flex-1 gap-1">
+              <PlusCircle className="w-4 h-4" />
+              New Chat
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="flex-1 gap-1"
+              onClick={() => setShowCreateGroup(true)}
+            >
+              <Users className="w-4 h-4" />
+              Group
+            </Button>
+          </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -132,7 +148,35 @@ const ChatSidebar = ({ selectedChatId, onSelectChat }: ChatSidebarProps) => {
           ))}
         </div>
       </ScrollArea>
+
+      {/* Footer */}
+      <div className="mt-auto border-t p-3 flex gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex-1"
+          onClick={onOpenSettings}
+          title="Profile"
+        >
+          <UserCircle className="w-5 h-5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex-1"
+          onClick={onOpenSettings}
+          title="Settings"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
+      </div>
     </div>
+
+    <CreateGroupDialog 
+      open={showCreateGroup} 
+      onOpenChange={setShowCreateGroup} 
+    />
+  </>
   );
 };
 

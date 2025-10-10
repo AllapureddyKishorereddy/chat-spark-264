@@ -1,16 +1,21 @@
 import { useState } from "react";
 import ChatSidebar from "@/components/chat/ChatSidebar";
 import ChatWindow from "@/components/chat/ChatWindow";
-import UserPanel from "@/components/chat/UserPanel";
+import SettingsSidebar from "@/components/chat/SettingsSidebar";
 
 const Chat = () => {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Sidebar - Chat List */}
       <div className="w-full md:w-80 lg:w-96 flex-shrink-0">
-        <ChatSidebar selectedChatId={selectedChatId} onSelectChat={setSelectedChatId} />
+        <ChatSidebar 
+          selectedChatId={selectedChatId} 
+          onSelectChat={setSelectedChatId}
+          onOpenSettings={() => setShowSettings(true)}
+        />
       </div>
 
       {/* Main Chat Window */}
@@ -18,10 +23,12 @@ const Chat = () => {
         <ChatWindow selectedChatId={selectedChatId} />
       </div>
 
-      {/* User Info Panel */}
-      <div className="w-80 lg:w-96 flex-shrink-0 hidden lg:block">
-        <UserPanel />
-      </div>
+      {/* Settings Panel (Collapsible) */}
+      {showSettings && (
+        <div className="w-80 lg:w-96 flex-shrink-0 hidden lg:block">
+          <SettingsSidebar onClose={() => setShowSettings(false)} />
+        </div>
+      )}
     </div>
   );
 };

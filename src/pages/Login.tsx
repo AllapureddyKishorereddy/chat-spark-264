@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -17,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     
     // Mock authentication
-    if (email && password) {
+    if (email && password && mobileNumber) {
       toast({
         title: "Login successful!",
         description: "Welcome back to Realtime Chat",
@@ -26,7 +27,7 @@ const Login = () => {
     } else {
       toast({
         title: "Login failed",
-        description: "Please enter valid credentials",
+        description: "Please enter all fields",
         variant: "destructive",
       });
     }
@@ -67,6 +68,17 @@ const Login = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mobile">Mobile Number</Label>
+              <Input
+                id="mobile"
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
                 required
               />
             </div>

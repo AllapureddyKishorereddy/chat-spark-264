@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -18,7 +19,7 @@ const Signup = () => {
     e.preventDefault();
     
     // Mock registration
-    if (fullName && email && password) {
+    if (fullName && email && mobileNumber && password) {
       toast({
         title: "Account created!",
         description: "Welcome to Realtime Chat",
@@ -68,6 +69,17 @@ const Signup = () => {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mobile">Mobile Number</Label>
+              <Input
+                id="mobile"
+                type="tel"
+                placeholder="+91 98765 43210"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
                 required
               />
             </div>
