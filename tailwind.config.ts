@@ -57,6 +57,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        chat: {
+          sidebar: "hsl(var(--chat-sidebar))",
+          window: "hsl(var(--chat-window))",
+          userPanel: "hsl(var(--chat-user-panel))",
+          bubbleSent: "hsl(var(--chat-bubble-sent))",
+          bubbleReceived: "hsl(var(--chat-bubble-received))",
+          onlineStatus: "hsl(var(--online-status))",
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
