@@ -164,6 +164,14 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
           variant="ghost"
           size="icon"
           className="flex-1"
+          title="New Chat"
+        >
+          <PlusCircle className="w-5 h-5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="flex-1"
           onClick={onOpenSettings}
           title="Settings"
         >
