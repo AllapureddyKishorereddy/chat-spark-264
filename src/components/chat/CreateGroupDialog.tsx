@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 interface CreateGroupDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onGroupCreated?: (groupName: string, members: string[]) => void;
 }
 
 const mockContacts = [
@@ -18,7 +19,7 @@ const mockContacts = [
   { id: "4", name: "Maria Garcia", phone: "+91 98765 43213" },
 ];
 
-const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps) => {
+const CreateGroupDialog = ({ open, onOpenChange, onGroupCreated }: CreateGroupDialogProps) => {
   const [groupName, setGroupName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const { toast } = useToast();
@@ -49,6 +50,8 @@ const CreateGroupDialog = ({ open, onOpenChange }: CreateGroupDialogProps) => {
       });
       return;
     }
+
+    onGroupCreated?.(groupName, selectedMembers);
 
     toast({
       title: "Group created!",

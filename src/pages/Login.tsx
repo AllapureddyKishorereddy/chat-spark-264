@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ContactPermissionDialog from "@/components/chat/ContactPermissionDialog";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [showPermissionDialog, setShowPermissionDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -19,11 +21,7 @@ const Login = () => {
     
     // Mock authentication
     if (email && password && mobileNumber) {
-      toast({
-        title: "Login successful!",
-        description: "Welcome back to Realtime Chat",
-      });
-      navigate("/chat");
+      setShowPermissionDialog(true);
     } else {
       toast({
         title: "Login failed",
@@ -31,6 +29,24 @@ const Login = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handlePermissionResponse = (response: "allow" | "always" | "deny") => {
+    setShowPermissionDialog(false);
+    
+    if (response === "deny") {
+      toast({
+        title: "Access Denied",
+        description: "You can still use the app, but contact features will be limited.",
+      });
+    } else {
+      toast({
+        title: "Login successful!",
+        description: `Contacts access ${response === "always" ? "always allowed" : "allowed"}.`,
+      });
+    }
+    
+    navigate("/chat");
   };
 
   return (
@@ -94,6 +110,11 @@ const Login = () => {
           </div>
         </CardContent>
       </Card>
+
+      <ContactPermissionDialog 
+        open={showPermissionDialog}
+        onPermissionResponse={handlePermissionResponse}
+      />
     </div>
   );
 };

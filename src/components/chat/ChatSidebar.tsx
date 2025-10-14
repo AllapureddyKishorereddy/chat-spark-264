@@ -14,6 +14,7 @@ interface Chat {
   timestamp: string;
   unread: number;
   online: boolean;
+  isGroup?: boolean;
 }
 
 const mockChats: Chat[] = [
@@ -64,8 +65,23 @@ interface ChatSidebarProps {
 const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [chats, setChats] = useState<Chat[]>(mockChats);
 
-  const filteredChats = mockChats.filter((chat) =>
+  const handleGroupCreated = (groupName: string, members: string[]) => {
+    const newGroup: Chat = {
+      id: `group-${Date.now()}`,
+      name: groupName,
+      avatar: "",
+      lastMessage: "Group created",
+      timestamp: "now",
+      unread: 0,
+      online: false,
+      isGroup: true,
+    };
+    setChats([newGroup, ...chats]);
+  };
+
+  const filteredChats = chats.filter((chat) =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -80,21 +96,15 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
               <h2 className="text-xl font-semibold">Chats</h2>
             </div>
           </div>
-          <div className="flex gap-2 mb-3">
-            <Button size="sm" className="flex-1 gap-1">
-              <PlusCircle className="w-4 h-4" />
-              New Chat
-            </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="flex-1 gap-1"
-              onClick={() => setShowCreateGroup(true)}
-            >
-              <Users className="w-4 h-4" />
-              Group
-            </Button>
-          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="w-full gap-1 mb-3"
+            onClick={() => setShowCreateGroup(true)}
+          >
+            <Users className="w-4 h-4" />
+            Create Group
+          </Button>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -122,10 +132,10 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
                   <Avatar>
                     <AvatarImage src={chat.avatar} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {chat.name.split(" ").map((n) => n[0]).join("")}
+                      {chat.isGroup ? <Users className="w-4 h-4" /> : chat.name.split(" ").map((n) => n[0]).join("")}
                     </AvatarFallback>
                   </Avatar>
-                  {chat.online && (
+                  {!chat.isGroup && chat.online && (
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-chat-onlineStatus border-2 border-chat-sidebar rounded-full" />
                   )}
                 </div>
@@ -147,6 +157,17 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
             </div>
           ))}
         </div>
+        
+        {/* Floating Add Button */}
+        <div className="sticky bottom-4 right-4 flex justify-end p-4">
+          <Button
+            size="icon"
+            className="rounded-full w-14 h-14 shadow-lg"
+            title="New Chat"
+          >
+            <PlusCircle className="w-6 h-6" />
+          </Button>
+        </div>
       </ScrollArea>
 
       {/* Footer */}
@@ -164,14 +185,6 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
           variant="ghost"
           size="icon"
           className="flex-1"
-          title="New Chat"
-        >
-          <PlusCircle className="w-5 h-5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="flex-1"
           onClick={onOpenSettings}
           title="Settings"
         >
@@ -182,7 +195,8 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
 
     <CreateGroupDialog 
       open={showCreateGroup} 
-      onOpenChange={setShowCreateGroup} 
+      onOpenChange={setShowCreateGroup}
+      onGroupCreated={handleGroupCreated}
     />
   </>
   );
