@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MessageSquare, PlusCircle, Search, Users, UserCircle, Settings } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CreateGroupDialog from "./CreateGroupDialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Chat {
   id: string;
@@ -15,6 +16,7 @@ interface Chat {
   unread: number;
   online: boolean;
   isGroup?: boolean;
+  members?: Array<{ id: string; name: string; avatar: string; online: boolean }>;
 }
 
 const mockChats: Chat[] = [
@@ -58,7 +60,7 @@ const mockChats: Chat[] = [
 
 interface ChatSidebarProps {
   selectedChatId: string | null;
-  onSelectChat: (chatId: string) => void;
+  onSelectChat: (chatId: string, chat: Chat) => void;
   onOpenSettings: () => void;
 }
 
@@ -66,8 +68,16 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chats, setChats] = useState<Chat[]>(mockChats);
+  const { toast } = useToast();
 
   const handleGroupCreated = (groupName: string, members: string[]) => {
+    const mockMembers = members.map((name, idx) => ({
+      id: `member-${idx}`,
+      name,
+      avatar: "",
+      online: Math.random() > 0.5,
+    }));
+
     const newGroup: Chat = {
       id: `group-${Date.now()}`,
       name: groupName,
@@ -77,8 +87,16 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
       unread: 0,
       online: false,
       isGroup: true,
+      members: mockMembers,
     };
     setChats([newGroup, ...chats]);
+  };
+
+  const handleNewChat = () => {
+    toast({
+      title: "New Chat",
+      description: "Feature coming soon! Search for contacts above.",
+    });
   };
 
   const filteredChats = chats.filter((chat) =>
@@ -122,7 +140,7 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
           {filteredChats.map((chat) => (
             <div
               key={chat.id}
-              onClick={() => onSelectChat(chat.id)}
+              onClick={() => onSelectChat(chat.id, chat)}
               className={`p-4 hover:bg-background/50 cursor-pointer chat-transition ${
                 selectedChatId === chat.id ? "bg-background/70" : ""
               }`}
@@ -164,6 +182,7 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
             size="icon"
             className="rounded-full w-14 h-14 shadow-lg"
             title="New Chat"
+            onClick={handleNewChat}
           >
             <PlusCircle className="w-6 h-6" />
           </Button>

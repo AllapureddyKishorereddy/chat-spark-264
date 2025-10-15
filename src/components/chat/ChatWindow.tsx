@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Phone, Video, MoreVertical, Smile, Paperclip, Send } from "lucide-react";
+import { Phone, Video, MoreVertical, Smile, Paperclip, Send, Users } from "lucide-react";
+import GroupMembersDialog from "./GroupMembersDialog";
 
 interface Message {
   id: string;
@@ -39,13 +40,24 @@ const mockMessages: Message[] = [
   },
 ];
 
-interface ChatWindowProps {
-  selectedChatId: string | null;
+interface ChatInfo {
+  id: string;
+  name: string;
+  avatar: string;
+  online: boolean;
+  isGroup?: boolean;
+  members?: Array<{ id: string; name: string; avatar: string; online: boolean }>;
 }
 
-const ChatWindow = ({ selectedChatId }: ChatWindowProps) => {
+interface ChatWindowProps {
+  selectedChatId: string | null;
+  chatInfo?: ChatInfo;
+}
+
+const ChatWindow = ({ selectedChatId, chatInfo }: ChatWindowProps) => {
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState(mockMessages);
+  const [showGroupMembers, setShowGroupMembers] = useState(false);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,17 +93,33 @@ const ChatWindow = ({ selectedChatId }: ChatWindowProps) => {
       {/* Header */}
       <div className="p-4 border-b bg-background/50 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div 
+            className={`flex items-center gap-3 ${chatInfo?.isGroup ? 'cursor-pointer' : ''}`}
+            onClick={() => chatInfo?.isGroup && setShowGroupMembers(true)}
+          >
             <div className="relative">
               <Avatar>
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                <AvatarImage src={chatInfo?.avatar || ""} />
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {chatInfo?.isGroup ? (
+                    <Users className="w-4 h-4" />
+                  ) : (
+                    chatInfo?.name.split(" ").map((n) => n[0]).join("") || "JD"
+                  )}
+                </AvatarFallback>
               </Avatar>
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-chat-onlineStatus border-2 border-background rounded-full" />
+              {!chatInfo?.isGroup && chatInfo?.online && (
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-chat-onlineStatus border-2 border-background rounded-full" />
+              )}
             </div>
             <div>
-              <h3 className="font-semibold">John Doe</h3>
-              <p className="text-xs text-muted-foreground">online</p>
+              <h3 className="font-semibold">{chatInfo?.name || "John Doe"}</h3>
+              <p className="text-xs text-muted-foreground">
+                {chatInfo?.isGroup 
+                  ? `${chatInfo.members?.length || 0} members, ${chatInfo.members?.filter(m => m.online).length || 0} online`
+                  : chatInfo?.online ? "online" : "offline"
+                }
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -157,6 +185,15 @@ const ChatWindow = ({ selectedChatId }: ChatWindowProps) => {
           </Button>
         </form>
       </div>
+      
+      {chatInfo?.isGroup && chatInfo.members && (
+        <GroupMembersDialog
+          open={showGroupMembers}
+          onOpenChange={setShowGroupMembers}
+          groupName={chatInfo.name}
+          members={chatInfo.members}
+        />
+      )}
     </div>
   );
 };

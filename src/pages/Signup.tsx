@@ -6,12 +6,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ContactPermissionDialog from "@/components/chat/ContactPermissionDialog";
 
 const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [showPermissionDialog, setShowPermissionDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -24,7 +26,7 @@ const Signup = () => {
         title: "Account created!",
         description: "Welcome to Realtime Chat",
       });
-      navigate("/chat");
+      setShowPermissionDialog(true);
     } else {
       toast({
         title: "Signup failed",
@@ -32,6 +34,16 @@ const Signup = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handlePermissionResponse = (response: "allow" | "always" | "deny") => {
+    toast({
+      title: `Contacts ${response === "deny" ? "denied" : "allowed"}`,
+      description: response === "deny" 
+        ? "You can change this later in settings" 
+        : "Your contacts will be synced",
+    });
+    navigate("/chat");
   };
 
   return (
@@ -106,6 +118,11 @@ const Signup = () => {
           </div>
         </CardContent>
       </Card>
+      
+      <ContactPermissionDialog 
+        open={showPermissionDialog} 
+        onPermissionResponse={handlePermissionResponse}
+      />
     </div>
   );
 };
