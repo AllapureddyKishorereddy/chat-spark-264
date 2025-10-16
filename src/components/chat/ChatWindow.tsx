@@ -46,7 +46,7 @@ interface ChatInfo {
   avatar: string;
   online: boolean;
   isGroup?: boolean;
-  members?: Array<{ id: string; name: string; avatar: string; online: boolean }>;
+  members?: Array<{ id: string; name: string; avatar: string; online: boolean; role: 'admin' | 'member' }>;
 }
 
 interface ChatWindowProps {
@@ -192,6 +192,7 @@ const ChatWindow = ({ selectedChatId, chatInfo }: ChatWindowProps) => {
           onOpenChange={setShowGroupMembers}
           groupName={chatInfo.name}
           members={chatInfo.members}
+          currentUserId="member-0"
         />
       )}
     </div>

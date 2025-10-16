@@ -16,7 +16,7 @@ interface Chat {
   unread: number;
   online: boolean;
   isGroup?: boolean;
-  members?: Array<{ id: string; name: string; avatar: string; online: boolean }>;
+  members?: Array<{ id: string; name: string; avatar: string; online: boolean; role: 'admin' | 'member' }>;
 }
 
 const mockChats: Chat[] = [
@@ -76,6 +76,7 @@ const ChatSidebar = ({ selectedChatId, onSelectChat, onOpenSettings }: ChatSideb
       name,
       avatar: "",
       online: Math.random() > 0.5,
+      role: idx === 0 ? 'admin' as const : 'member' as const,
     }));
 
     const newGroup: Chat = {
